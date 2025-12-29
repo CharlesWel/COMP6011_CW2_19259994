@@ -7,9 +7,6 @@ cvsData = pd.read_cvs("heart_failure_clinical_records_dataset.csv")
 inputCols = ["age","anaemia","creatinine_phosphokinase","diabetes","ejection_fraction","high_blood_pressure","platelets","serum_creatinine","serum_sodium","sex","smoking","time"] 
 answerCol = "DEATH_EVENT"
 
-cvsData = cvsData[inputCols + [answerCol]].copy()
-cvsData = cvsData.dropna(subset = inputCls + [answerCol])
-
 xData = cvsData[inputCols].values
 yData = cvsData[answerCol].values
 
