@@ -21,3 +21,34 @@ YVal = yVal.tolist()
 
 XTest =  xTest.tolist()
 YTest = yTest.tolist()
+
+def sigmoid(x):
+  temp = 1 / (1 + math.exp(-x))
+  
+  return temp
+
+def predictProb(x, y, a):
+  temp = y
+  
+  for i in range(len(x)):
+    temp += x[i] * a[i]
+    
+  return sigmoid(temp)
+
+def accuracy(x, y, a, b):
+  correct = 0
+  sizeA = len(a)
+  
+  for i in range(sizeA):
+    if predictProb(x, y, a[i]) == b[i]:
+      correct += 1
+      
+  temp = correct / sizeA
+  
+  return temp
+
+def predictLable(x, y, a):
+  if preictProb(x, y, a) >= 0.5:
+    return 1
+  else:
+    return 0
