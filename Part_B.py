@@ -50,5 +50,17 @@ def accuracy(x, y, a, b):
 def predictLable(x, y, a):
   if preictProb(x, y, a) >= 0.5:
     return 1
+    
   else:
     return 0
+
+def meanSquareError(x, y, a, b):
+  totalSE = 0
+  temp = len(a)
+  
+  for i in range(temp):
+    prob = predictProb(x, y, a[i])
+    error = prob - b[i]
+    totalSE += error * error
+  return s / temp
+
