@@ -64,3 +64,32 @@ def meanSquareError(x, y, a, b):
     totalSE += error * error
   return s / temp
 
+def gradientDescent(a, b, learningRate, passes):
+  weightVector = [0] * 12
+  bias = 0
+  
+  for i in range(passes):
+    gradientLoss = [0] * 12
+    gradientLossBias = 0
+    
+    for j in range(len(a)):
+      prob = predictProb(weightVector, bias, a[j])
+      error = prob - b[j]
+      
+      for l in range(12):
+        gradientLoss[l] += error * a[j][l]
+        
+      bias += error
+      
+    meanGrad = 1 / len(a)
+    
+    for k in range(12):
+      weightVector[k] -= learningRate * (gradientLoss[k] * meanGrad)
+      
+    bias -= learningRate * (gradientLossBias * meanGrad)
+  
+  return weightVector, bias    
+
+
+
+  
