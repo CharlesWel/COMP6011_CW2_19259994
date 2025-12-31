@@ -96,16 +96,55 @@ def gradientDescent(a, b, learningRate, passes):
   
   return weightVector, bias 
 
-print("Enter 1 to")
-print("Enter 2 to")
-#choice = int(input(""))
-choice = 1
+def displayLearningCurve():
+  print()
 
-if choice == 1:
+print("Enter 1 to run network")
+print("Enter 2 to run network and display learning curve")
+print("Enter 3 to find the best hyperparamites")
+print()
+#choice = int(input(""))
+choice = 3
+
+if choice == 1 or choice == 2:
   weightvector, bias = gradientDescent(XTrain, YTrain, 0.1, 100)
 
   trainingAccuracy = accuracy(weightvector, bias, XTrain,  YTrain)
   validationAccuracy = accuracy(weightvector, bias, XVal, YVal)
 
+  print("Training classification rate:", trainingAccuracy)
+  print("Validation classification rate", validationAccuracy)
+
+  if choice == 2:
+    displayLearningCurve()
+
+else:
+  learningRateOptions = [0.01, 0.05, 0.1, 0.2]
+  passesOptions = [20, 50, 100, 200]
+  testNum = 1
+  best = 1
+  bestValues = [0,0]
+
+  for i in range(len(learningRateOptions)):
+    for j in range(len(passesOptions)):
+      weightvector, bias = gradientDescent(XTrain, YTrain, learningRateOptions[i], passesOptions[j])
+
+      trainingAccuracy = accuracy(weightvector, bias, XTrain,  YTrain)
+      validationAccuracy = accuracy(weightvector, bias, XVal, YVal)
+
+      print("Test", testNum," learning rate:", learningRateOptions[i], " number of passes", passesOptions[j])
+      print("Training classification rate:", trainingAccuracy)
+      print("Validation classification rate", validationAccuracy)
+      print()
+
+      if (trainingAccuracy - validationAccuracy) < best:
+        best = testNum
+        bestValues[0] = trainingAccuracy
+        bestValues[1] = validationAccuracy
+      
+      testNum += 1
+  
+  print("The best test was test ",best)
+  print("Which has the results:")
   print("Training classification rate:", trainingAccuracy)
   print("Validation classification rate", validationAccuracy)
