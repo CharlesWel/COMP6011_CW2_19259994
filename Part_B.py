@@ -32,45 +32,42 @@ def sigmoid(x):
   
   return temp
 
-def predictProb(x, y, a):
-  temp = y
+def predictProb(featrues, bias, weightVec):
+  temp = bias
   
-  for i in range(len(x)):
-    temp += x[i] * a[i]
+  for i in range(len(featrues)):
+    temp += featrues[i] * weightVec[i]
     
   return sigmoid(temp)
 
-def predictLable(x, y, a):
-  if predictProb(x, y, a) >= 0.5:
+def predictLable(featrues, bias, weightVec):
+  if predictProb(featrues, bias, weightVec) >= 0.5:
     return 1
     
   else:
     return 0
 
+def accuracy(weightVec, bias, featrues, lables):
+    correct = 0
+    sizeA = len(featrues)
 
-def accuracy(x, y, a, b):
-  correct = 0
-  sizeA = len(a)
-  
-  for i in range(sizeA):
-    if predictLable(x, y, a[i]) == b[i]:
-      correct += 1
-      
-  temp = correct / sizeA
-  
-  return temp
+    for i in range(sizeA):
+        if predictLable(featrues[i], bias, weightVec) == lables[i]:
+            correct += 1
 
-def meanSquareError(x, y, a, b):
+    return correct / sizeA
+
+def meanSquareError(featrues, bias, weightVec, lables):
   totalSE = 0
-  temp = len(a)
+  temp = len(weightVec)
   
   for i in range(temp):
-    prob = predictProb(x, y, a[i])
-    error = prob - b[i]
+    prob = predictProb(featrues, bias, weightVec[i])
+    error = prob - lables[i]
     totalSE += error * error
   return totalSE / temp
 
-def gradientDescent(a, b, learningRate, passes):
+def gradientDescent(featrues, lables, learningRate, passes):
   weightVector = [0] * 12
   bias = 0
   
@@ -78,16 +75,16 @@ def gradientDescent(a, b, learningRate, passes):
     gradientLoss = [0] * 12
     gradientLossBias = 0
     
-    for j in range(len(a)):
-      prob = predictProb(weightVector, bias, a[j])
-      error = prob - b[j]
+    for j in range(len(featrues)):
+      prob = predictProb(featrues[j], bias, weightVector)
+      error = prob - lables[j]
       
       for l in range(12):
-        gradientLoss[l] += error * a[j][l]
+        gradientLoss[l] += error * featrues[j][l]
         
       gradientLossBias += error
       
-    meanGrad = 1 / len(a)
+    meanGrad = 1 / len(featrues)
     
     for k in range(12):
       weightVector[k] -= learningRate * (gradientLoss[k] * meanGrad)
@@ -119,8 +116,8 @@ if choice == 1 or choice == 2:
     displayLearningCurve()
 
 else:
-  learningRateOptions = [0.01, 0.05, 0.1, 0.2]
-  passesOptions = [20, 50, 100, 200]
+  learningRateOptions = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
+  passesOptions = [20, 50, 100, 200, 250, 300, 350, 400]
   testNum = 1
   best = 1
   bestValues = [0,0]
@@ -135,6 +132,8 @@ else:
       print("Test", testNum," learning rate:", learningRateOptions[i], " number of passes", passesOptions[j])
       print("Training classification rate:", trainingAccuracy)
       print("Validation classification rate", validationAccuracy)
+      print("Bias rate:", bias)
+      print("Weight vector:", weightvector)
       print()
 
       if (trainingAccuracy - validationAccuracy) < best:
@@ -146,5 +145,6 @@ else:
   
   print("The best test was test ",best)
   print("Which has the results:")
-  print("Training classification rate:", trainingAccuracy)
-  print("Validation classification rate", validationAccuracy)
+  print("Training classification rate:", bestValues[0])
+  print("Validation classification rate", bestValues[1])
+
