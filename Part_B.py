@@ -59,17 +59,19 @@ def accuracy(weightVec, bias, featrues, lables):
 
 def meanSquareError(featrues, bias, weightVec, lables):
   totalSE = 0
-  temp = len(weightVec)
+  temp = len(featrues)
   
   for i in range(temp):
-    prob = predictProb(featrues, bias, weightVec[i])
+    prob = predictProb(featrues[i], bias, weightVec)
     error = prob - lables[i]
     totalSE += error * error
   return totalSE / temp
 
-def gradientDescent(featrues, lables, learningRate, passes):
+def gradientDescent(featrues, lables, learningRate, passes, Xval, Yval, graph):
   weightVector = [0] * 12
   bias = 0
+  trainError = []
+  valError = []
   
   for i in range(passes):
     gradientLoss = [0] * 12
@@ -90,21 +92,42 @@ def gradientDescent(featrues, lables, learningRate, passes):
       weightVector[k] -= learningRate * (gradientLoss[k] * meanGrad)
       
     bias -= learningRate * (gradientLossBias * meanGrad)
-  
-  return weightVector, bias 
 
-def displayLearningCurve():
-  print()
+    if graph == True:
+      trainError.append(meanSquareError(featrues, bias, weightVector, lables))
+
+      if Xval != None and Yval != None:
+        valError.append(meanSquareError(XVal, bias, weightVector, YVal))
+  
+  if graph == False:
+    return weightVector, bias 
+  else:
+    return weightVector, bias, trainError, valError
+
+def displayLearningCurve(trainError, valError):
+  epochs = range(1, len(trainError) + 1)
+
+  plt.plot(epochs, trainError, label="Training Error")
+
+  if valError != None and len(valError) > 0:
+    plt.plot(epochs, valError, label="Validation Error")
+
+  plt.xlabel("Epochs")
+  plt.ylabel("Mean Squared Error")
+  plt.title("Learning Curves")
+  plt.legend()
+  plt.grid(True)
+  plt.show()
 
 print("Enter 1 to run network")
 print("Enter 2 to run network and display learning curve")
 print("Enter 3 to find the best hyperparamites")
 print()
 #choice = int(input(""))
-choice = 3
+choice = 2
 
 if choice == 1 or choice == 2:
-  weightvector, bias = gradientDescent(XTrain, YTrain, 0.1, 100)
+  weightvector, bias, trainError, valError = gradientDescent(XTrain, YTrain, 0.1, 100, XVal, YVal, True)
 
   trainingAccuracy = accuracy(weightvector, bias, XTrain,  YTrain)
   validationAccuracy = accuracy(weightvector, bias, XVal, YVal)
@@ -113,7 +136,7 @@ if choice == 1 or choice == 2:
   print("Validation classification rate", validationAccuracy)
 
   if choice == 2:
-    displayLearningCurve()
+    displayLearningCurve(trainError, valError)
 
 else:
   learningRateOptions = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
@@ -147,4 +170,5 @@ else:
   print("Which has the results:")
   print("Training classification rate:", bestValues[0])
   print("Validation classification rate", bestValues[1])
+
 
