@@ -11,9 +11,12 @@ answerCol = "DEATH_EVENT"
 xData = cvsData[inputCols].values
 yData = cvsData[answerCol].values
 
-mins = xData.min()
-maxs = xData.max()
-xData = (xData - mins) / (maxs - mins)
+mins = xData.min(axis=0)
+maxs = xData.max(axis=0)
+diff = maxs - mins
+diff[diff == 0] = 1
+
+xData = (xData - mins) / diff
 
 xTrain, xTemp, yTrain, yTemp = train_test_split(xData, yData, test_size=0.30, random_state=42)
 xVal, xTest, yVal, yTest = train_test_split(xTemp, yTemp, test_size=0.50, random_state=42)
@@ -27,8 +30,8 @@ YVal = yVal.tolist()
 XTest =  xTest.tolist()
 YTest = yTest.tolist()
 
-def sigmoid(x):
-  temp = 1 / (1 + math.exp(-x))
+def sigmoid(z):
+  temp = 1 / (1 + math.exp(-z))
   
   return temp
 
