@@ -18,6 +18,7 @@ diff[diff == 0] = 1
 
 xData = (xData - mins) / diff
 
+
 xTrain, xTemp, yTrain, yTemp = train_test_split(xData, yData, test_size=0.30, random_state=42)
 xVal, xTest, yVal, yTest = train_test_split(xTemp, yTemp, test_size=0.50, random_state=42)
 
@@ -67,6 +68,7 @@ def meanSquareError(featrues, bias, weightVec, lables):
   for i in range(temp):
     prob = predictProb(featrues[i], bias, weightVec)
     error = prob - lables[i]
+
     totalSE += error * error
   return totalSE / temp
 
@@ -127,10 +129,10 @@ print("Enter 2 to run network and display learning curve")
 print("Enter 3 to find the best hyperparamites")
 print()
 #choice = int(input(""))
-choice = 2
+choice = 3
 
 if choice == 1 or choice == 2:
-  weightvector, bias, trainError, valError = gradientDescent(XTrain, YTrain, 0.1, 100, XVal, YVal, True)
+  weightvector, bias, trainError, valError = gradientDescent(XTrain, YTrain, 0.5, 200, XVal, YVal, True)
 
   trainingAccuracy = accuracy(weightvector, bias, XTrain,  YTrain)
   validationAccuracy = accuracy(weightvector, bias, XVal, YVal)
@@ -142,15 +144,16 @@ if choice == 1 or choice == 2:
     displayLearningCurve(trainError, valError)
 
 else:
-  learningRateOptions = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
-  passesOptions = [20, 50, 100, 200, 250, 300, 350, 400]
+  learningRateOptions = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
+  passesOptions = [20, 50, 100, 200, 250, 300, 350, 400, 450, 500] 
   testNum = 1
-  best = 1
+  best = -1
   bestValues = [0,0]
+  bestDiff = -1
 
   for i in range(len(learningRateOptions)):
     for j in range(len(passesOptions)):
-      weightvector, bias = gradientDescent(XTrain, YTrain, learningRateOptions[i], passesOptions[j])
+      weightvector, bias = gradientDescent(XTrain, YTrain, learningRateOptions[i], passesOptions[j], XVal, YVal, False)
 
       trainingAccuracy = accuracy(weightvector, bias, XTrain,  YTrain)
       validationAccuracy = accuracy(weightvector, bias, XVal, YVal)
@@ -162,12 +165,14 @@ else:
       print("Weight vector:", weightvector)
       print()
 
-      if (trainingAccuracy - validationAccuracy) < best:
+      if (validationAccuracy > bestValues[1]) or (validationAccuracy == bestValues[1] and (trainingAccuracy - validationAccuracy) < best):
         best = testNum
         bestValues[0] = trainingAccuracy
         bestValues[1] = validationAccuracy
+        bestDiff = (trainingAccuracy - validationAccuracy)
       
       testNum += 1
+      
   
   print("The best test was test ",best)
   print("Which has the results:")
